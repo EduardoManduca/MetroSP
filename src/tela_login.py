@@ -60,7 +60,7 @@ while rodando:
             rodando = False
 
         input_box_id.handle_event(evento)
-        input_box_id.handle_event(evento)
+        input_box_senha.handle_event((evento))
  
     input_box_id.desenhar(tela)
     input_box_senha.desenhar(tela)
