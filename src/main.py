@@ -2,6 +2,7 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
+from models.Botao import Botao
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -13,7 +14,7 @@ ALTURA = 700
 
 app = ctk.CTk()
 app.geometry(f"{LARGURA}x{ALTURA}")
-app.title("Login - Metrô SP")
+app.title("Simulador Metro SP")
 app.resizable(False, False)
 
 # Centralizar janela
@@ -153,6 +154,8 @@ def abrir_menu():
     )
     btn_sair.place(relx=0.5, y=596, anchor="center")
 
+
+# ================================ Tipo de Falha ===================================
 def abriTreinamento(): 
     for winget in app.winfo_children():
         winget.destroy()
@@ -173,7 +176,8 @@ def abriTreinamento():
         corner_radius=10,
         fg_color="#001489",
         hover_color="#001a73",
-        text_color="white"
+        text_color="white",
+        command=falhaPorta
     )
     btn_falha_porta.place(relx=0.5, y=420, anchor="center")
     
@@ -191,5 +195,50 @@ def abriTreinamento():
     )
     btn_voltar.place(relx=0.5, y=508, anchor="center")
 
+def falhaPorta():
+    for winget in app.winfo_children():
+        winget.destroy()
+    
+    # =========== Fundo ==============
+    img_fundo = Image.open("./imgs/Simulacao/Painel.jpg").resize((1300,700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    # ============ Botões =============
+    imagem_seta_direita = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
+        size=(30, 30)
+    )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30,30)
+    )
+    
+    btn_seta_d = Botao(
+        app,
+        text="",
+        image=imagem_seta_direita,
+        width=60, height=60
+    )
+    btn_seta_d.pack(side="right", padx=10, pady=5)
+    
+    btn_seta_d = Botao(
+        app,
+        text="",
+        image=imagem_seta_esquerda,
+        width=60, height=60
+    )
+    btn_seta_d.pack(side="left", padx=10, pady=5)
+    
+    acesso_painel = Botao(
+        app,
+        text="",
+        fg_color="yellow",
+        width=100, height=50
+    )
+    acesso_painel.place(relx=0.5, y=420, anchor="center")
+    
 main()
 app.mainloop()
