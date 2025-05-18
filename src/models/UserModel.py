@@ -1,12 +1,12 @@
 class UserModel:
-    def __init__(self, nome, senha):
-        self.nome = nome
+    def __init__(self, email, senha):
+        self.email = email
         self.senha = senha
     
-    def getNome(self):
-        return self.nome
-    def setNome(self, nome):
-        self.nome = nome
+    def getEmail(self):
+        return self.email
+    def setEmail(self, email):
+        self.nome = email
     
     def getSenha(self):
         return self.senha

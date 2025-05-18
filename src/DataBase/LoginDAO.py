@@ -9,10 +9,10 @@ class LoginDAO:
         
         # Fazer Requisição
         cursor = conn.cursor()
-        nome = usuario.getNome()
+        email = usuario.getEmail()
         senha = usuario.getSenha()
         cursor.execute(
-            "SELECT * FROM usuarios WHERE nome = %s AND senha = %s", (nome, senha,)
+            "SELECT * FROM Usuario WHERE Email = %s AND Senha = %s", (email, senha,)
         )
         
         # Guardar resultado
