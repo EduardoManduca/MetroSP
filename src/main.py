@@ -8,25 +8,22 @@ ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 
 # ======================================= Tela Login ======================================= 
+LARGURA = 1300
+ALTURA = 700
+
 app = ctk.CTk()
-app.geometry("1300x700")
-
-def centralizar(janela):
-    janela.update_idletasks()  # garante que os tamanhos estejam atualizados
-
-    largura = janela.winfo_width()
-    altura = janela.winfo_height()
-
-    largura_tela = janela.winfo_screenwidth()
-    altura_tela = janela.winfo_screenheight()
-
-    x = (largura_tela // 2) - (largura // 2)
-    y = (altura_tela // 2) - (altura // 2)
-
-    janela.geometry(f"{largura}x{altura}+{x}+{y}"
-                    )
+app.geometry(f"{LARGURA}x{ALTURA}")
 app.title("Login - Metrô SP")
-# app.resizable(False, False)
+app.resizable(False, False)
+
+# Centralizar janela
+largura = app.winfo_screenwidth()
+altura = app.winfo_screenheight()
+
+x = (largura // 2) - (LARGURA // 2)
+y = (altura // 2) - (ALTURA // 2)
+
+app.geometry(f"{LARGURA}x{ALTURA}+{x}+{y}")
 
 def mensagem():
     popup = ctk.CTk()
