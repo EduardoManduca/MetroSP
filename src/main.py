@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
 from models.Botao import Botao
+from Game.Porta import Porta
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -195,6 +196,8 @@ def abriTreinamento():
     )
     btn_voltar.place(relx=0.5, y=508, anchor="center")
 
+
+
 def falhaPorta():
     for winget in app.winfo_children():
         winget.destroy()
@@ -216,29 +219,86 @@ def falhaPorta():
         size=(30,30)
     )
     
-    btn_seta_d = Botao(
+    seta_direita = ctk.CTkButton(
         app,
         text="",
+        width=60,
+        height=60,
         image=imagem_seta_direita,
-        width=60, height=60
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=lambda: print("Seta direita clicada")
     )
-    btn_seta_d.pack(side="right", padx=10, pady=5)
-    
-    btn_seta_d = Botao(
+    seta_direita.place(x=1230, y=320)
+
+    seta_esquerda = ctk.CTkButton(
         app,
         text="",
+        width=60,
+        height=60,
         image=imagem_seta_esquerda,
-        width=60, height=60
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=boteira_porta_fechada
     )
-    btn_seta_d.pack(side="left", padx=10, pady=5)
+    seta_esquerda.place(x=10, y=320)
     
-    acesso_painel = Botao(
+    botao_adu = ctk.CTkButton(
+        app,
+        text="ADU",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=ADU
+    )
+    botao_adu.place(x=560, y=250)
+
+def ADU():
+    for winget in app.winfo_children():
+        winget.destroy()
+        
+    img_fundo = Image.open("./imgs/Simulacao/ADU.png").resize((1300,700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    # imagem_seta_cima = ctk.CTkImage(
+    #     light_image=Image.open("./imgs/Simulacao/seta_cima.jpg"),
+    #     size=(30, 30)
+    # )
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30,30)
+    )
+    seta_baixo = ctk.CTkButton(
         app,
         text="",
-        fg_color="yellow",
-        width=100, height=50
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
     )
-    acesso_painel.place(relx=0.5, y=420, anchor="center")
-    
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+def boteira_porta_fechada():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    # ============ Fundo =============
+    img_fundo = Image.open("./imgs/Sim 890-ulacao/boteira.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    # ============ Botões =============
+
+
 main()
 app.mainloop()
