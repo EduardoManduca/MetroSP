@@ -2,9 +2,9 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
-from models.Botao import Botao
 from Game.Porta import Porta
 from Game.ChaveReversora import ChaveReversora
+from Game.Chave_CBTC import ChaveCBTC
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -158,6 +158,19 @@ def aciona_chave_reversora():
 
 def verifica_chave_reversora():
     func = aciona_chave_reversora()
+    func()
+    
+# ================================ Verifica Chave CBTC ===================================
+chave_cbtc = ChaveCBTC()
+def aciona_chave_cbtc():
+    if chave_cbtc.estado == "AM":
+        return chave_cbtc_am
+    elif chave_cbtc.estado == "MCS":
+        return chave_cbtc_mcs
+    elif chave_cbtc.estado == "RM":
+        return chave_cbtc_rm
+def verifica_chave_cbtc():
+    func = aciona_chave_cbtc()
     func()
 
 # ================================ Tela Login ===================================   
@@ -340,7 +353,7 @@ def falhaPorta():
         image=imagem_seta_direita,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=lambda: print("Seta direita clicada")
+        command=painel_direita
     )
     seta_direita.place(x=1230, y=320)
 
@@ -725,6 +738,273 @@ def boteira_porta_aberta():
         command=mensagem_porta_aberta
     )
     botao_abrir_porta.place(x=560, y=300)
+    
+def painel_direita():
+    chave_cbtc.set_estado("AM")
+    
+    for widget in app.winfo_children():
+        widget.destroy()
 
+    img_fundo = Image.open("./imgs/Simulacao/painel_direito_com_chave.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_direita = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
+        size=(30, 30)
+    )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30,30)
+    )
+    
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_direita = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_direita,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=lambda: print("Seta Direita clicada")
+    )
+    seta_direita.place(x=1230, y=320)
+
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_esquerda.place(x=10, y=320)
+    
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=verifica_chave_cbtc
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+def chave_cbtc_am():
+    chave_cbtc.set_estado("AM")
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/cbtc_am.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_cima = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_cima = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_cima,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=painel_direita
+    )
+    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+    
+    botao_mcs = ctk.CTkButton(
+        app,
+        text="MCS",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_mcs
+    )
+    botao_mcs.place(x=950, y=300)
+    
+    botao_rm = ctk.CTkButton(
+        app,
+        text="RM",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_rm
+    )
+    botao_rm.place(x=950, y=400)
+    
+    botao_am = ctk.CTkButton(
+        app,
+        text="AM",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_am
+    )
+    botao_am.place(x=950, y=500)
+
+def chave_cbtc_mcs():
+    chave_cbtc.set_estado("MCS")
+    
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/cbtc_mcs.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_cima = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_cima = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_cima,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=painel_direita
+    )
+    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+
+    botao_mcs = ctk.CTkButton(
+        app,
+        text="MCS",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_mcs
+    )
+    botao_mcs.place(x=950, y=300)
+    
+    botao_rm = ctk.CTkButton(
+        app,
+        text="RM",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_rm
+    )
+    botao_rm.place(x=950, y=400)
+    
+    botao_am = ctk.CTkButton(
+        app,
+        text="AM",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_am
+    )
+    botao_am.place(x=950, y=500)
+    
+def chave_cbtc_rm():
+    chave_cbtc.set_estado("RM")
+    
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/cbtc_rm.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_cima = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+    
+    seta_cima = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_cima,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=painel_direita
+    )
+    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+
+    botao_mcs = ctk.CTkButton(
+        app,
+        text="MCS",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_mcs
+    )
+    botao_mcs.place(x=950, y=300)
+    
+    botao_rm = ctk.CTkButton(
+        app,
+        text="RM",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_rm
+    )
+    botao_rm.place(x=950, y=400)
+    
+    botao_am = ctk.CTkButton(
+        app,
+        text="AM",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_cbtc_am
+    )
+    botao_am.place(x=950, y=500)
 main()
 app.mainloop()
