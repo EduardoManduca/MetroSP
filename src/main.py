@@ -4,6 +4,7 @@ from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
 from models.Botao import Botao
 from Game.Porta import Porta
+from Game.ChaveReversora import ChaveReversora
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -143,6 +144,22 @@ def aciona_ddu():
 def verifica_ddu():
     func = aciona_ddu()
     func()
+    
+# ================================ Verifica Chave Reversora ===================================
+chave = ChaveReversora()
+
+def aciona_chave_reversora():
+    if chave.estado == "Neutro":
+        return chave_reversora_neutro
+    elif chave.estado == "Frente":
+        return chave_reversora_frente
+    else:
+        return chave_reversora_neutro
+
+def verifica_chave_reversora():
+    func = aciona_chave_reversora()
+    func()
+
 # ================================ Tela Login ===================================   
 # Fundo com imagem
 def main():
@@ -363,10 +380,21 @@ def falhaPorta():
         hover=False,
         command=verifica_ddu
     )
-    
-    
     botao_ddu.place(x=200, y=270)
 
+    botao_chave_reversora = ctk.CTkButton(
+        app,
+        text="Chave Reversora",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=verifica_chave_reversora
+    )
+    botao_chave_reversora.place(x=350, y=400)
+    
 def ADU():
     for winget in app.winfo_children():
         winget.destroy()
@@ -448,6 +476,142 @@ def ddu_portas_fechadas():
         command=falhaPorta
     )
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+def chave_reversora_neutro():
+    chave.set_estado("Neutro")
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/reversora_neutro.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    # ============ Botões =============
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+    
+    botao_frente = ctk.CTkButton(
+        app,
+        text="Frente",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_reversora_frente
+    )
+    botao_frente.place(x=950, y=300)
+    
+    botao_neutro = ctk.CTkButton(
+        app,
+        text="Neutro",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_reversora_neutro
+    )
+    botao_neutro.place(x=950, y=400)
+    
+    botao_re = ctk.CTkButton(
+        app,
+        text="Ré",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+    )
+    botao_re.place(x=950, y=500)
+
+def chave_reversora_frente():
+    chave.set_estado("Frente")
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/reversora_frente.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+    botao_frente = ctk.CTkButton(
+        app,
+        text="Frente",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_reversora_frente
+    )
+    botao_frente.place(x=950, y=300)
+    
+    botao_neutro = ctk.CTkButton(
+        app,
+        text="Neutro",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=chave_reversora_neutro
+    )
+    botao_neutro.place(x=950, y=400)
+    
+    
+
+    botao_re = ctk.CTkButton(
+        app,
+        text="Ré",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+    )
+    botao_re.place(x=950, y=500)
 
 def boteira_porta_fechada():
     porta.set_porta(False)
