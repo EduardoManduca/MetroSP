@@ -6,3 +6,6 @@ class Porta:
 
     def esta_aberta(self) -> bool:
         return self.estado
+
+    def set_porta(self, estado: bool):
+        self.estado = estado

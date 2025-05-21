@@ -54,6 +54,86 @@ def mensagem():
     
     popup.mainloop()
 
+# =============================== Mensagem da porta ===================================
+def mensagem_porta_aberta():
+    mensagem = ctk.CTk()
+    mensagem.geometry("300x250")
+    mensagem.title("Mensagem")
+    mensagem.resizable(False, False)
+
+    # Centralizar a janela na tela
+    largura_tela = mensagem.winfo_screenwidth()
+    altura_tela = mensagem.winfo_screenheight()
+    largura_janela = 300
+    altura_janela = 250
+    x = (largura_tela // 2) - (largura_janela // 2)
+    y = (altura_tela // 2) - (altura_janela // 2)
+    mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
+
+    label_mensagem = ctk.CTkLabel(mensagem, text="Porta já está aberta!", font=('Arial', 20, "bold"))
+    label_mensagem.place(relx=0.5, y=150, anchor="center")
+    
+    btn_tentar_novamente = ctk.CTkButton(
+        mensagem,
+        text="Tentar novamente",
+        width=100,
+        height=50,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=lambda: mensagem.destroy()
+    )
+    btn_tentar_novamente.place(relx=0.5, y=200, anchor="center")
+    
+    mensagem.mainloop()
+
+def mensagem_porta_fechada():
+    mensagem = ctk.CTk()
+    mensagem.geometry("300x250")
+    mensagem.title("Mensagem")
+    mensagem.resizable(False, False)
+
+    # Centralizar a janela na tela
+    largura_tela = mensagem.winfo_screenwidth()
+    altura_tela = mensagem.winfo_screenheight()
+    largura_janela = 300
+    altura_janela = 250
+    x = (largura_tela // 2) - (largura_janela // 2)
+    y = (altura_tela // 2) - (altura_janela // 2)
+    mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
+
+    label_mensagem = ctk.CTkLabel(mensagem, text="Porta já está fechada!", font=('Arial', 20, "bold"))
+    label_mensagem.place(relx=0.5, y=150, anchor="center")
+    
+    btn_tentar_novamente = ctk.CTkButton(
+        mensagem,
+        text="Tentar novamente",
+        width=100,
+        height=50,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=lambda: mensagem.destroy()
+    )
+    btn_tentar_novamente.place(relx=0.5, y=200, anchor="center")
+    
+    mensagem.mainloop()
+
+# ================================ Verifica Porta ===================================
+def aciona_boteira_porta():
+    if porta.esta_aberta():
+        return boteira_porta_aberta
+    else:
+        return boteira_porta_fechada
+    
+def verifica_porta():
+    func = aciona_boteira_porta()
+    func()
+
 # ================================ Tela Login ===================================   
 # Fundo com imagem
 def main():
@@ -197,10 +277,15 @@ def abriTreinamento():
     )
     btn_voltar.place(relx=0.5, y=508, anchor="center")
 
+
 # ============================ Tela Simulador =============================
 
+porta = Porta()
+porta.set_porta(False)
 
 def falhaPorta():
+
+    
     for winget in app.winfo_children():
         winget.destroy()
     
@@ -241,7 +326,7 @@ def falhaPorta():
         image=imagem_seta_esquerda,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=boteira_porta_fechada
+        command=verifica_porta
     )
     seta_esquerda.place(x=10, y=320)
     
@@ -257,6 +342,8 @@ def falhaPorta():
         command=ADU
     )
     botao_adu.place(x=560, y=250)
+    
+    
 
 def ADU():
     for winget in app.winfo_children():
@@ -287,8 +374,9 @@ def ADU():
         command=falhaPorta
     )
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
-
+    
 def boteira_porta_fechada():
+    porta.set_porta(False)
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -300,9 +388,52 @@ def boteira_porta_fechada():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # ============ Botões =============
+    botao_abrir_porta = ctk.CTkButton(
+        app,
+        text="Abrir Portas",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=boteira_porta_aberta
+    )
+    botao_abrir_porta.place(x=560, y=300)
+    
+    botao_fechar_porta = ctk.CTkButton(
+        app,
+        text="Fechar Portas",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=mensagem_porta_fechada
+    )
+    botao_fechar_porta.place(x=600, y=430)
 
+    imagem_seta_direita = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
+        size=(30,30)
+    )
+    seta_direita = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_direita,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_direita.place(x=1230, y=320)
 
+# =========================== Boteira Porta Aberta ============================
+# Aqui você pode adicionar a lógica para o que acontece quando a porta está aberta
 def boteira_porta_aberta():
+    porta.set_porta(True)
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -314,6 +445,48 @@ def boteira_porta_aberta():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # ============ Botões =============
+
+    imagem_seta_direita = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
+        size=(30,30)
+    )
+    seta_direita = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_direita,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_direita.place(x=1230, y=320)
+    
+    botao_fechar_porta = ctk.CTkButton(
+        app,
+        text="Fechar Portas",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=boteira_porta_fechada
+    )
+    botao_fechar_porta.place(x=600, y=430)
+
+    botao_abrir_porta = ctk.CTkButton(
+        app,
+        text="Abrir Portas",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=mensagem_porta_aberta
+    )
+    botao_abrir_porta.place(x=560, y=300)
 
 main()
 app.mainloop()
