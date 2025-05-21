@@ -134,6 +134,15 @@ def verifica_porta():
     func = aciona_boteira_porta()
     func()
 
+# ================================ Verifica DDU ===================================
+def aciona_ddu():
+    if porta.esta_aberta():
+        return ddu_portas_abertas
+    else:
+        return ddu_portas_fechadas
+def verifica_ddu():
+    func = aciona_ddu()
+    func()
 # ================================ Tela Login ===================================   
 # Fundo com imagem
 def main():
@@ -343,7 +352,20 @@ def falhaPorta():
     )
     botao_adu.place(x=560, y=250)
     
+    botao_ddu = ctk.CTkButton(
+        app,
+        text="DDU",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=verifica_ddu
+    )
     
+    
+    botao_ddu.place(x=200, y=270)
 
 def ADU():
     for winget in app.winfo_children():
@@ -374,7 +396,59 @@ def ADU():
         command=falhaPorta
     )
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+def ddu_portas_abertas():
+    for winget in app.winfo_children():
+        winget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/DDU_porta_aberta.jpg").resize((1300,700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
     
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+def ddu_portas_fechadas():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/DDU_porta_fechada.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
 def boteira_porta_fechada():
     porta.set_porta(False)
     for widget in app.winfo_children():
