@@ -27,6 +27,8 @@ y = (altura // 2) - (ALTURA // 2)
 
 app.geometry(f"{LARGURA}x{ALTURA}+{x}+{y}")
 
+
+# ================================ Mensagem de erro ===================================
 def mensagem():
     popup = ctk.CTk()
     popup.geometry("300x250")
@@ -51,7 +53,8 @@ def mensagem():
     btn_tentar_novamente.place(relx=0.5, y=200, anchor="center")
     
     popup.mainloop()
-    
+
+# ================================ Tela Login ===================================   
 # Fundo com imagem
 def main():
     for winget in app.winfo_children():
@@ -97,8 +100,6 @@ def main():
 
     btn_login = ctk.CTkButton(app, text="Entrar", width=349, height=53, corner_radius=10, fg_color="#001489",font=("Arial", 14), command=login)
     btn_login.place(relx=0.5, y=590, anchor="center")
-
-# =============================================================================================
 
 # ============================= Tela Menu =============================
 def abrir_menu():
@@ -196,6 +197,7 @@ def abriTreinamento():
     )
     btn_voltar.place(relx=0.5, y=508, anchor="center")
 
+# ============================ Tela Simulador =============================
 
 
 def falhaPorta():
@@ -291,7 +293,7 @@ def boteira_porta_fechada():
         widget.destroy()
 
     # ============ Fundo =============
-    img_fundo = Image.open("./imgs/Sim 890-ulacao/boteira.jpg").resize((1300, 700))
+    img_fundo = Image.open("./imgs/Simulacao/boteira.jpg").resize((1300, 700))
     bg_image = ImageTk.PhotoImage(img_fundo)
 
     bg_label = ctk.CTkLabel(app, image=bg_image, text="")
@@ -299,6 +301,19 @@ def boteira_porta_fechada():
 
     # ============ Botões =============
 
+
+def boteira_porta_aberta():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    # ============ Fundo =============
+    img_fundo = Image.open("./imgs/Simulacao/boteira_porta_aberta.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    # ============ Botões =============
 
 main()
 app.mainloop()
