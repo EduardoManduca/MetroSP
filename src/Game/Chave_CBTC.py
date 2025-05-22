@@ -1,4 +1,4 @@
-class ChaveCBTC:
+class Chave_CBTC:
     def __init__(self, estado="AM"):
         self.estado = estado
 

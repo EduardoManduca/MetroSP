@@ -1,6 +1,5 @@
 class ADU:
-    def __init__(self, id):
-        self.id = id
+    def __init__(self):
         self.estado = "desativada"
 
     def ativar(self):

@@ -4,7 +4,8 @@ from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
 from Game.Porta import Porta
 from Game.ChaveReversora import ChaveReversora
-from Game.Chave_CBTC import ChaveCBTC
+from Game.Chave_CBTC import Chave_CBTC
+from time import sleep
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -124,6 +125,36 @@ def mensagem_porta_fechada():
     
     mensagem.mainloop()
 
+def mensagem_cco():
+    mensagem = ctk.CTk()
+    mensagem.geometry("300x250")
+    mensagem.title("Mensagem")
+    mensagem.resizable(False, False)
+    
+    # Centralizar a janela na tela
+    largura_tela = mensagem.winfo_screenwidth()
+    altura_tela = mensagem.winfo_screenheight()
+    largura_janela = 300
+    altura_janela = 250
+    x = (largura_tela // 2) - (largura_janela // 2)
+    y = (altura_tela // 2) - (altura_janela // 2)
+    mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
+    
+    # Centralizar os dois labels verticalmente na janela
+    label_mensagem1 = ctk.CTkLabel(mensagem, text="CCO Informado!", font=('Arial', 20, "bold"))
+    label_mensagem2 = ctk.CTkLabel(mensagem, text="Permissão para verificar falha", font=('Arial', 20, "bold"))
+
+    # Calcula a posição y para centralizar os dois labels juntos
+    altura_total_labels = 40 + 40 + 10  # altura dos dois labels + espaçamento
+    y_inicio = (250 - altura_total_labels) // 2
+
+    label_mensagem1.place(relx=0.5, y=y_inicio + 20, anchor="center")
+    label_mensagem2.place(relx=0.5, y=y_inicio + 70, anchor="center")
+    
+    mensagem.after(3000, mensagem.destroy)
+    
+    mensagem.mainloop()
+
 # ================================ Verifica Porta ===================================
 def aciona_boteira_porta():
     if porta.esta_aberta():
@@ -161,7 +192,7 @@ def verifica_chave_reversora():
     func()
     
 # ================================ Verifica Chave CBTC ===================================
-chave_cbtc = ChaveCBTC()
+chave_cbtc = Chave_CBTC()
 def aciona_chave_cbtc():
     if chave_cbtc.estado == "AM":
         return chave_cbtc_am
@@ -393,7 +424,7 @@ def falhaPorta():
         hover=False,
         command=verifica_ddu
     )
-    botao_ddu.place(x=200, y=270)
+    botao_ddu.place(x=150, y=270)
 
     botao_chave_reversora = ctk.CTkButton(
         app,
@@ -407,6 +438,19 @@ def falhaPorta():
         command=verifica_chave_reversora
     )
     botao_chave_reversora.place(x=350, y=400)
+    
+    botao_modulo_comunicacao = ctk.CTkButton(
+        app,
+        text="Comunicação",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=modulo_comunicacao
+    )
+    botao_modulo_comunicacao.place(x=300, y=220)
     
 def ADU():
     for winget in app.winfo_children():
@@ -626,6 +670,72 @@ def chave_reversora_frente():
     )
     botao_re.place(x=950, y=500)
 
+def modulo_comunicacao():
+    for widget in app.winfo_children():
+        widget.destroy()
+    
+    img_fundo = Image.open("./imgs/Simulacao/modulo_comunicacao.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+    
+    botao_PA = ctk.CTkButton(
+        app,
+        text="PA",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=PA
+    )
+    botao_PA.place(x=150, y=100)
+    
+    botao_CCO = ctk.CTkButton(
+        app,
+        text="CCO",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=mensagem_cco
+    )
+    botao_CCO.place(x=150, y=350)
+    
+def PA():
+    for widget in app.winfo_children():
+        widget.destroy()
+    
+    img_fundo = Image.open("./imgs/Simulacao/PA.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    app.after(3000, modulo_comunicacao)
+
 def boteira_porta_fechada():
     porta.set_porta(False)
     for widget in app.winfo_children():
@@ -740,7 +850,6 @@ def boteira_porta_aberta():
     botao_abrir_porta.place(x=560, y=300)
     
 def painel_direita():
-    chave_cbtc.set_estado("AM")
     
     for widget in app.winfo_children():
         widget.destroy()
@@ -804,6 +913,7 @@ def painel_direita():
 
 def chave_cbtc_am():
     chave_cbtc.set_estado("AM")
+    
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -941,7 +1051,8 @@ def chave_cbtc_mcs():
     
 def chave_cbtc_rm():
     chave_cbtc.set_estado("RM")
-    
+    print(chave_cbtc.estado)
+
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -1006,5 +1117,7 @@ def chave_cbtc_rm():
         command=chave_cbtc_am
     )
     botao_am.place(x=950, y=500)
+    
+
 main()
 app.mainloop()

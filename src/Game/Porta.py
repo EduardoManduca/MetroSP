@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 class Porta:
-    def __init__(self, estado: bool = False):
+    def __init__(self, estado: bool = True):
         self.estado = estado
 
     def esta_aberta(self) -> bool:
