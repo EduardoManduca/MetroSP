@@ -7,6 +7,8 @@ from Game.ChaveReversora import ChaveReversora
 from Game.Chave_CBTC import Chave_CBTC
 from Game.PainelExterno import PainelExterno
 from Game.PortaFalha import PortaFalha
+from Game.PortaLacrada import PortaLacrada
+
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -276,7 +278,22 @@ def aciona_porta_falha():
 def verifica_porta_falha():
     func = aciona_porta_falha()
     func()
-    
+
+# ================================ Verifica porta lacrada ===================================
+
+obj_porta_lacrada = PortaLacrada()
+def aciona_porta_lacrada():
+    if obj_porta_lacrada.get_estado():
+        return porta_lacrada
+    else:
+        return porta_falha_fechada
+
+def verifica_porta_lacrada():
+    func = aciona_porta_lacrada()
+    func()
+
+# =============================== Movimentação porta lacrada ===================================
+
 # ================================ Tela Login ===================================
 # Fundo com imagem
 def main():
@@ -1472,6 +1489,48 @@ def porta_falha_fechada():
         command=painel_externo
     )
     seta_esquerda.place(relx=0.05, rely=0.5, anchor="w")
+    
+    botao_colocar_lacre = ctk.CTkButton(
+        app,
+        text="Colocar Lacre",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=porta_lacrada
+    )
+    botao_colocar_lacre.place(relx=0.5, rely=0.5, anchor="center")
+ 
+def porta_lacrada():
+    
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo2 = Image.open("./imgs/Simulacao/lacre_3.jpg").resize((1300, 700))
+    bg_image2 = ImageTk.PhotoImage(img_fundo2)
+
+    bg_label2 = ctk.CTkLabel(app, image=bg_image2, text="")
+    bg_label2.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=lado_fora
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
 
 def vao():
     for widget in app.winfo_children():
