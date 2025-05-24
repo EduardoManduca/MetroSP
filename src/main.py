@@ -155,6 +155,52 @@ def mensagem_cco():
     
     mensagem.mainloop()
 
+def mensagem_isolamento_errado():
+    mensagem = ctk.CTk()
+    mensagem.geometry("300x250")
+    mensagem.title("Mensagem")
+    mensagem.resizable(False, False)
+    
+    # Centralizar a janela na tela
+    largura_tela = mensagem.winfo_screenwidth()
+    altura_tela = mensagem.winfo_screenheight()
+    largura_janela = 300
+    altura_janela = 250
+    x = (largura_tela // 2) - (largura_janela // 2)
+    y = (altura_tela // 2) - (altura_janela // 2)
+    mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
+    
+    label_mensagem = ctk.CTkLabel(mensagem, text="Porta errada!", font=('Arial', 20, "bold"))
+    label_mensagem.place(relx=0.5, y=150, anchor="center")
+    
+    mensagem.after(3000, mensagem.destroy)
+    
+    mensagem.mainloop()
+
+def mensagem_isolamento_correto():
+    mensagem = ctk.CTk()
+    mensagem.geometry("300x250")
+    mensagem.title("Mensagem")
+    mensagem.resizable(False, False)
+    
+    # Centralizar a janela na tela
+    largura_tela = mensagem.winfo_screenwidth()
+    altura_tela = mensagem.winfo_screenheight()
+    largura_janela = 300
+    altura_janela = 250
+    x = (largura_tela // 2) - (largura_janela // 2)
+    y = (altura_tela // 2) - (altura_janela // 2)
+    mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
+    
+    label_mensagem1 = ctk.CTkLabel(mensagem, text="Porta correta!", font=('Arial', 20, "bold"))
+    label_mensagem2 = ctk.CTkLabel(mensagem, text="Porta isolada!", font=('Arial', 20, "bold"))
+    label_mensagem1.place(relx=0.5, y=150, anchor="center")
+    label_mensagem2.place(relx=0.5, y=180, anchor="center")
+
+    mensagem.after(3000, mensagem.destroy)
+
+    mensagem.mainloop()
+
 # ================================ Verifica Porta ===================================
 def aciona_boteira_porta():
     if porta.esta_aberta():
@@ -950,7 +996,7 @@ def porta_saida():
         image=imagem_seta_cima,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=falhaPorta
+        command=lado_fora
     )
     seta_cima.place(relx=0.5, rely=0.05, anchor="n")
 
@@ -1235,6 +1281,278 @@ def chave_cbtc_rm():
     )
     botao_am.place(x=950, y=500)
    
+def lado_fora():
+    for widget in app.winfo_children():
+        widget.destroy()
 
+    img_fundo = Image.open("./imgs/Simulacao/lado_fora.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    imagem_seta_direita = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_saida
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+    seta_direita = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_direita,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_falha
+    )
+    seta_direita.place(relx=0.95, rely=0.5, anchor="e")
+
+def porta_falha(): 
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/porta.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    imagem_seta_cima = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+
+    # ============ Botões =============
+    seta_cima = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_cima,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=lado_dentro_falha
+    )
+    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+    
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=vao
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+    
+def vao():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/vao.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_cima = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30, 30)
+    )
+
+    # ============ Botões =============
+    seta_cima = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_cima,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_falha
+    )
+    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+    
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=painel_externo
+    )
+    seta_esquerda.place(relx=0.05, rely=0.5, anchor="w")
+
+def lado_dentro_falha():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/lado_dentro_falha.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_falha
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+    
+
+def painel_externo():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/painel_externo.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_direita = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
+        size=(30, 30)
+    )
+    # ============ Botões =============
+    seta_direita = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_direita,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=vao
+    )
+    seta_direita.place(relx=0.95, rely=0.5, anchor="e")
+    
+    botao_abrir_painel = ctk.CTkButton(
+        app,
+        text="Abrir Painel",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=painel_externo_aberto
+    )
+    botao_abrir_painel.place(relx=0.5, rely=0.95, anchor="s")
+
+def painel_externo_aberto():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/painel_externo_aberto.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    botao_fechar_painel = ctk.CTkButton(
+        app,
+        text="Fechar Painel",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=painel_externo
+    )
+    botao_fechar_painel.place(relx=0.5, rely=0.95, anchor="s")
+
+    # ============ Isolamento de portas =============
+    isoalar_porta1 = ctk.CTkButton(
+        app,
+        text="Isolar Porta 1",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=mensagem_isolamento_errado
+    )
+    isoalar_porta1.place(x=1000, y=100)
+    isoalar_porta2 = ctk.CTkButton(
+        app,
+        text="Isolar Porta 2",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=mensagem_isolamento_correto
+    )
+    isoalar_porta2.place(x=1000, y=150)
+    isoalar_porta3 = ctk.CTkButton(
+        app,
+        text="Isolar Porta 3",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=mensagem_isolamento_errado
+    )
+    isoalar_porta3.place(x=1000, y=200)
+    isoalar_porta4 = ctk.CTkButton(
+        app,
+        text="Isolar Porta 4",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=mensagem_isolamento_errado
+    )
+    isoalar_porta4.place(x=1000, y=250)
 main()
 app.mainloop()
