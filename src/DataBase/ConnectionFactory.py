@@ -7,5 +7,5 @@ class ConnectionFactory:
             host = "127.0.0.1",
             user = "root",
             password = "root",
-            database = "db"
+            database = "metro_simulacao"
         )

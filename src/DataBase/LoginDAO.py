@@ -12,7 +12,7 @@ class LoginDAO:
         email = usuario.getEmail()
         senha = usuario.getSenha()
         cursor.execute(
-            "SELECT * FROM Usuario WHERE Email = %s AND Senha = %s", (email, senha,)
+            "SELECT * FROM usuario WHERE Email = %s AND Senha = %s", (email, senha,)
         )
         
         # Guardar resultado
@@ -25,5 +25,4 @@ class LoginDAO:
         # Retornar resultado
         if row:
             return True
-        
         return False

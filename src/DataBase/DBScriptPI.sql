@@ -11,9 +11,9 @@ USE `metro_simulacao`;
 -- 2) Tabela de Usuários
 -- Credenciais maquinista e supervisor
 CREATE TABLE `Usuario` (
-  `idUsuario`   INT          NOT NULL AUTO_INCREMENT COMMENT,
-  `Senha`       CHAR(60)     NOT NULL COMMENT,
-  `Email`       VARCHAR(100) NOT NULL COMMENT,
+  `idUsuario`   INT          NOT NULL AUTO_INCREMENT COMMENT 'Identificador único do usuário',
+  `Senha`       CHAR(60)     NOT NULL COMMENT 'Senha criptografada do usuário',
+  `Email`       VARCHAR(100) NOT NULL COMMENT 'Email único para login',
   `Tipo`        ENUM('maquinista','supervisor') NOT NULL COMMENT 'Perfil de acesso',
   PRIMARY KEY (`idUsuario`),
   UNIQUE KEY `UQ_Usuario_Email` (`Email`)
@@ -22,7 +22,7 @@ CREATE TABLE `Usuario` (
 -- 3) Tabela de Histórico
 -- Armazena estatísticas agregadas de performance de cada maquinista.
 CREATE TABLE `Historico` (
-  `idUsuario`       INT       NOT NULL COMMENT,
+  `idUsuario`       INT       NOT NULL COMMENT 'Identificador único do usuário',
   `Acertos`         SMALLINT  NOT NULL COMMENT 'Total de acertos em todas as simulações',
   `NumSimulacoes`   SMALLINT  NOT NULL COMMENT 'Quantidade de vezes que o usuário iniciou uma simulação',
   `MediaPontuacoes` INT       NOT NULL COMMENT 'Média das pontuações obtidas',
@@ -38,8 +38,8 @@ CREATE TABLE `Historico` (
 -- 4) Tabela de Simulações
 -- Cada registro representa uma sessão de treino ou avaliação.
 CREATE TABLE `Simulacao` (
-  `idSimulacao`     INT       NOT NULL AUTO_INCREMENT COMMENT,
-  `idUsuario`       INT       NOT NULL COMMENT,
+  `idSimulacao`     INT       NOT NULL AUTO_INCREMENT COMMENT 'Identificador único da simulação',
+  `idUsuario`       INT       NOT NULL COMMENT 'Identificador do usuário que realizou a simulação',
   `pontuacao_total` INT       NOT NULL COMMENT 'Pontuação obtida na simulação',
   `num_acertos`     SMALLINT  NOT NULL COMMENT 'Número de procedimentos corretos durante a simulação',
   PRIMARY KEY (`idSimulacao`),
@@ -54,7 +54,7 @@ CREATE TABLE `Simulacao` (
 -- 5) Tabela de Recomendações
 -- Feedback gerado para cada simulação, sugerindo correções ou próximos passos.
 CREATE TABLE `Recomendacao` (
-  `idSimulacao`   INT          NOT NULL COMMENT,
+  `idSimulacao`   INT          NOT NULL COMMENT 'Identificador da simulação associada',
   `Erro`          VARCHAR(100) NOT NULL COMMENT 'Descrição resumida do principal erro identificado',
   `Recomendacao`  TEXT         NOT NULL COMMENT 'Orientação ou dica para melhorar no próximo treino',
   PRIMARY KEY (`idSimulacao`),

@@ -426,6 +426,19 @@ def falhaPorta():
     )
     botao_ddu.place(x=150, y=270)
 
+    botao_vdu = ctk.CTkButton(
+        app,
+        text="VDU",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=vdu
+    )
+    botao_vdu.place(x=1000, y=250)
+
     botao_chave_reversora = ctk.CTkButton(
         app,
         text="Chave Reversora",
@@ -513,6 +526,32 @@ def ddu_portas_fechadas():
         widget.destroy()
 
     img_fundo = Image.open("./imgs/Simulacao/DDU_porta_fechada.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+def vdu():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/vdu.jpg").resize((1300, 700))
     bg_image = ImageTk.PhotoImage(img_fundo)
 
     bg_label = ctk.CTkLabel(app, image=bg_image, text="")
@@ -1117,7 +1156,7 @@ def chave_cbtc_rm():
         command=chave_cbtc_am
     )
     botao_am.place(x=950, y=500)
-    
+   
 
 main()
 app.mainloop()
