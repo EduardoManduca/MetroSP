@@ -399,7 +399,7 @@ def falhaPorta():
         command=verifica_porta
     )
     seta_esquerda.place(x=10, y=320)
-    
+
     botao_adu = ctk.CTkButton(
         app,
         text="ADU",
@@ -818,6 +818,11 @@ def boteira_porta_fechada():
         light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
         size=(30,30)
     )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30,30)
+    )
+
     seta_direita = ctk.CTkButton(
         app,
         text="",
@@ -829,6 +834,18 @@ def boteira_porta_fechada():
         command=falhaPorta
     )
     seta_direita.place(x=1230, y=320)
+
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_saida
+    )
+    seta_esquerda.place(x=10, y=320)
 
 # =========================== Boteira Porta Aberta ============================
 # Aqui você pode adicionar a lógica para o que acontece quando a porta está aberta
@@ -850,6 +867,23 @@ def boteira_porta_aberta():
         light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
         size=(30,30)
     )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30,30)
+    )
+    
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_saida
+    )
+    seta_esquerda.place(x=10, y=320)
+
     seta_direita = ctk.CTkButton(
         app,
         text="",
@@ -887,9 +921,53 @@ def boteira_porta_aberta():
         command=mensagem_porta_aberta
     )
     botao_abrir_porta.place(x=560, y=300)
+
+def porta_saida(): 
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/porta_saida.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_cima = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30, 30)
+    )
     
+    # ============ Botões =============
+    seta_cima = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_cima,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=verifica_porta
+    )
+    seta_esquerda.place(x=10, y=320)
+
 def painel_direita():
-    
+
     for widget in app.winfo_children():
         widget.destroy()
 
