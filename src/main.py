@@ -5,7 +5,8 @@ from DataBase.LoginDAO import LoginDAO
 from Game.Porta import Porta
 from Game.ChaveReversora import ChaveReversora
 from Game.Chave_CBTC import Chave_CBTC
-from time import sleep
+from Game.PainelExterno import PainelExterno
+from Game.PortaFalha import PortaFalha
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -250,7 +251,33 @@ def verifica_chave_cbtc():
     func = aciona_chave_cbtc()
     func()
 
-# ================================ Tela Login ===================================   
+# =============================== Verifica Painel externo ===================================
+obj_painel = PainelExterno()
+
+def aciona_painel_externo():
+    if not obj_painel.get_estado():
+        return painel_externo_aberto
+    else:
+        return painel_externo_aberto_porta_isolada
+
+def verifica_painel_externo():
+    func = aciona_painel_externo()
+    func()
+    
+# =============================== Verifica porta falha fechada ===================================
+
+obj_porta_falha = PortaFalha()
+def aciona_porta_falha():
+    if obj_porta_falha.get_estado():
+        return porta_falha
+    else:
+        return porta_falha_fechada
+
+def verifica_porta_falha():
+    func = aciona_porta_falha()
+    func()
+    
+# ================================ Tela Login ===================================
 # Fundo com imagem
 def main():
     for winget in app.winfo_children():
@@ -1321,7 +1348,7 @@ def lado_fora():
         image=imagem_seta_direita,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=porta_falha
+        command=verifica_porta_falha
     )
     seta_direita.place(relx=0.95, rely=0.5, anchor="e")
 
@@ -1341,6 +1368,10 @@ def porta_falha():
     )
     imagem_seta_cima = ctk.CTkImage(
         light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
         size=(30, 30)
     )
 
@@ -1368,7 +1399,80 @@ def porta_falha():
         command=vao
     )
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=lado_fora
+    )
+    seta_esquerda.place(relx=0.05, rely=0.5, anchor="w")
+
+    # Exibe o botão "Fechar Porta" apenas se o painel externo estiver aberto (estado True)
+    if obj_painel.get_estado():
+        botao_fechar_porta = ctk.CTkButton(
+            app,
+            text="Fechar Porta",
+            width=60,
+            height=30,
+            fg_color="white",
+            text_color="black",
+            font=("Arial", 20),
+            hover=False,
+            command=porta_falha_fechada
+        )
+        botao_fechar_porta.place(relx=0.5, rely=0.5, anchor="center")
+
+def porta_falha_fechada():
+    obj_porta_falha.set_estado(False)
     
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/porta_fechada.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30, 30)
+    )
+
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=lado_fora
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+    
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=painel_externo
+    )
+    seta_esquerda.place(relx=0.05, rely=0.5, anchor="w")
+
 def vao():
     for widget in app.winfo_children():
         widget.destroy()
@@ -1465,7 +1569,7 @@ def painel_externo():
         image=imagem_seta_direita,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=vao
+        command=verifica_porta_falha
     )
     seta_direita.place(relx=0.95, rely=0.5, anchor="e")
     
@@ -1478,7 +1582,7 @@ def painel_externo():
         text_color="black",
         font=("Arial", 20),
         hover=False,
-        command=painel_externo_aberto
+        command=verifica_painel_externo
     )
     botao_abrir_painel.place(relx=0.5, rely=0.95, anchor="s")
 
@@ -1527,7 +1631,7 @@ def painel_externo_aberto():
         text_color="black",
         font=("Arial", 20),
         hover=False,
-        command=mensagem_isolamento_correto
+        command=painel_externo_aberto_porta_isolada
     )
     isoalar_porta2.place(x=1000, y=150)
     isoalar_porta3 = ctk.CTkButton(
@@ -1554,5 +1658,34 @@ def painel_externo_aberto():
         command=mensagem_isolamento_errado
     )
     isoalar_porta4.place(x=1000, y=250)
+    
+def painel_externo_aberto_porta_isolada():
+    obj_painel.set_estado(True)
+    
+    for widget in app.winfo_children():
+        widget.destroy()
+        
+    # mensagem_isolamento_correto()
+
+    img_fundo = Image.open("./imgs/Simulacao/painel_externo_aberto_porta_isolada.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    botao_fechar_painel = ctk.CTkButton(
+        app,
+        text="Fechar Painel",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=painel_externo
+    )
+    botao_fechar_painel.place(relx=0.5, rely=0.95, anchor="s")
+
+
 main()
 app.mainloop()
