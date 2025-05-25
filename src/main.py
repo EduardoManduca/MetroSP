@@ -333,13 +333,136 @@ def main():
         
         if resultado:
             print(True)
-            abrir_menu()
+            tipo_usuario = uDAO.verifica_tipo_usuario(usuario.getEmail())
+            if tipo_usuario == "supervisor":
+                tela_supervisor()
+            elif tipo_usuario == "maquinista":
+                abrir_menu()
+            else:
+                mensagem()
         else:
             print(False)
             mensagem()
 
     btn_login = ctk.CTkButton(app, text="Entrar", width=349, height=53, corner_radius=10, fg_color="#001489",font=("Arial", 14), command=login)
     btn_login.place(relx=0.5, y=590, anchor="center")
+
+def tela_supervisor():
+    for winget in app.winfo_children():
+        winget.destroy()
+    
+    # ============ Fundo =============
+    img_fundo = Image.open("./imgs/fundo_menu.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    # ====== Botões ======
+    btn_ranking = ctk.CTkButton(
+        app,
+        text="Ranking",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=tela_ranking
+    )
+    btn_ranking.place(relx=0.5, y=420, anchor="center")
+    
+    btn_adicionar_maquinista = ctk.CTkButton(
+        app,
+        text="Adicionar Maquinista",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=tela_adicionar_maquinista
+    )
+    btn_adicionar_maquinista.place(relx=0.5, y=508, anchor="center")
+
+    btn_remover_maquinista = ctk.CTkButton(
+        app,
+        text="Remover Maquinista",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=tela_remover_maquinista
+    )
+    btn_remover_maquinista.place(relx=0.5, y=596, anchor="center")
+
+def tela_ranking():
+    for winget in app.winfo_children():
+        winget.destroy()
+    
+    # ============ Fundo =============
+    img_fundo = Image.open("./imgs/fundo.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    # ====== Tabela de Ranking ======
+    tabela_ranking = ctk.CTkFrame(app)
+    tabela_ranking.place(relx=0.5, y=350, anchor="center")
+
+    # Adicionar cabeçalho
+    cabecalho = ctk.CTkLabel(tabela_ranking, text="Ranking de Usuários", font=("Arial", 24, "bold"))
+    cabecalho.pack(pady=10)
+
+    # Adicionar dados fictícios
+    for i in range(5):
+        usuario = f"Usuário {i+1}"
+        pontuacao = f"{(5-i)*10} pontos"
+        linha = ctk.CTkLabel(tabela_ranking, text=f"{usuario}: {pontuacao}", font=("Arial", 18))
+        linha.pack(anchor="w")
+
+    # ====== Botões ======
+    botao_sair = ctk.CTkButton(
+        app,
+        text="Sair",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=tela_supervisor
+    )
+    botao_sair.place(relx=0.5, y=596, anchor="center")
+
+def tela_adicionar_maquinista():
+    for winget in app.winfo_children():
+        winget.destroy()
+    
+    # ============ Fundo =============
+    img_fundo = Image.open("./imgs/fundo.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+def tela_remover_maquinista():
+    for winget in app.winfo_children():
+        winget.destroy()
+    
+    # ============ Fundo =============
+    img_fundo = Image.open("./imgs/fundo.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
 # ============================= Tela Menu =============================
 def abrir_menu():
