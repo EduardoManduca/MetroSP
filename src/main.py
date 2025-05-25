@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from PIL import Image, ImageTk
+from DataBase.SingUpDAO import SingUpDAO
+from models.NewUserModel import NewUserModel
 from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
 from Game.Porta import Porta
@@ -8,7 +10,7 @@ from Game.Chave_CBTC import Chave_CBTC
 from Game.PainelExterno import PainelExterno
 from Game.PortaFalha import PortaFalha
 from Game.PortaLacrada import PortaLacrada
-
+from Game.Tela import Tela
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
@@ -204,6 +206,50 @@ def mensagem_isolamento_correto():
 
     mensagem.mainloop()
 
+def mensagem_erro_cadastro():
+    mensagem = ctk.CTk()
+    mensagem.geometry("300x250")
+    mensagem.title("Mensagem")
+    mensagem.resizable(False, False)
+    
+    # Centralizar a janela na tela
+    largura_tela = mensagem.winfo_screenwidth()
+    altura_tela = mensagem.winfo_screenheight()
+    largura_janela = 300
+    altura_janela = 250
+    x = (largura_tela // 2) - (largura_janela // 2)
+    y = (altura_tela // 2) - (altura_janela // 2)
+    mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
+    
+    label_mensagem = ctk.CTkLabel(mensagem, text="Erro ao cadastrar!", font=('Arial', 20, "bold"))
+    label_mensagem.place(relx=0.5, y=150, anchor="center")
+    
+    mensagem.after(3000, mensagem.destroy)
+    
+    mensagem.mainloop()
+    
+def mensagem_sucesso_cadastro():
+    mensagem = ctk.CTk()
+    mensagem.geometry("300x250")
+    mensagem.title("Mensagem")
+    mensagem.resizable(False, False)
+    
+    # Centralizar a janela na tela
+    largura_tela = mensagem.winfo_screenwidth()
+    altura_tela = mensagem.winfo_screenheight()
+    largura_janela = 300
+    altura_janela = 250
+    x = (largura_tela // 2) - (largura_janela // 2)
+    y = (altura_tela // 2) - (altura_janela // 2)
+    mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
+    
+    label_mensagem = ctk.CTkLabel(mensagem, text="Cadastro realizado!", font=('Arial', 20, "bold"))
+    label_mensagem.place(relx=0.5, y=150, anchor="center")
+    
+    mensagem.after(3000, mensagem.destroy)
+    
+    mensagem.mainloop()
+
 # ================================ Verifica Porta ===================================
 def aciona_boteira_porta():
     if porta.esta_aberta():
@@ -291,6 +337,10 @@ def aciona_porta_lacrada():
 def verifica_porta_lacrada():
     func = aciona_porta_lacrada()
     func()
+
+# =============================== Cria usuario ===================================
+
+
 
 # =============================== Movimentação porta lacrada ===================================
 
@@ -417,7 +467,7 @@ def tela_ranking():
     tabela_ranking.place(relx=0.5, y=350, anchor="center")
 
     # Adicionar cabeçalho
-    cabecalho = ctk.CTkLabel(tabela_ranking, text="Ranking de Usuários", font=("Arial", 24, "bold"))
+    cabecalho = ctk.CTkLabel(tabela_ranking, text="Ranking", font=("Arial", 24, "bold"))
     cabecalho.pack(pady=10)
 
     # Adicionar dados fictícios
@@ -453,6 +503,61 @@ def tela_adicionar_maquinista():
     bg_label = ctk.CTkLabel(app, image=bg_image, text="")
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
+    # Campo Email
+    entry_email = ctk.CTkEntry(app, width=349, height=53, placeholder_text="Email", corner_radius=10, border_color="#001489",font=("Arial", 14))
+    entry_email.place(relx=0.5, y=168, anchor="center")
+    
+    # Campo Tipo
+    entry_tipo = ctk.CTkEntry(app, width=349, height=53, placeholder_text="Tipo", corner_radius=10, border_color="#001489",font=("Arial", 14))
+    entry_tipo.place(relx=0.5, y=253, anchor="center")
+    
+    # Campo Senha
+    entry_senha = ctk.CTkEntry(app, width=349, height=53, placeholder_text="Senha", corner_radius=10, border_color="#001489",show="*", font=("Arial", 14))
+    entry_senha.place(relx=0.5, y=338, anchor="center")
+    
+    # =========== Botões =============
+    
+    def cria_usuario():
+        user = NewUserModel(entry_email.get(), entry_tipo.get(), entry_senha.get())
+        uDAO = SingUpDAO()
+        resultado = uDAO.create_user(user)
+
+        if resultado:
+            mensagem_sucesso_cadastro()
+        else:
+            mensagem_erro_cadastro()
+    
+    btn_adicionar = ctk.CTkButton(
+        app,
+        text="Adicionar Maquinista",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=cria_usuario
+    )
+    btn_adicionar.place(relx=0.5, y=450, anchor="center")
+    
+
+
+    btn_sair = ctk.CTkButton(
+        app,
+        text="Sair",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=tela_supervisor
+    )
+    btn_sair.place(relx=0.5, y=550, anchor="center")
+
+    
 def tela_remover_maquinista():
     for winget in app.winfo_children():
         winget.destroy()
@@ -493,7 +598,7 @@ def abrir_menu():
 
     btn_historico = ctk.CTkButton(
         app,
-        text="Histórico",
+        text="Ranking",
         width=349,
         height=53,
         font=("Arial", 20),
