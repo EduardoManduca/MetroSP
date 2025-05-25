@@ -4,6 +4,8 @@ from DataBase.SingUpDAO import SingUpDAO
 from models.NewUserModel import NewUserModel
 from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
+from DataBase.DeleteUserDAO import DeleteUserDAO
+from DataBase.RankingDAO import RankingDAO
 from Game.Porta import Porta
 from Game.ChaveReversora import ChaveReversora
 from Game.Chave_CBTC import Chave_CBTC
@@ -221,7 +223,7 @@ def mensagem_erro_cadastro():
     y = (altura_tela // 2) - (altura_janela // 2)
     mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
     
-    label_mensagem = ctk.CTkLabel(mensagem, text="Erro ao cadastrar!", font=('Arial', 20, "bold"))
+    label_mensagem = ctk.CTkLabel(mensagem, text="Erro!", font=('Arial', 20, "bold"))
     label_mensagem.place(relx=0.5, y=150, anchor="center")
     
     mensagem.after(3000, mensagem.destroy)
@@ -243,7 +245,7 @@ def mensagem_sucesso_cadastro():
     y = (altura_tela // 2) - (altura_janela // 2)
     mensagem.geometry(f"{largura_janela}x{altura_janela}+{x}+{y}")
     
-    label_mensagem = ctk.CTkLabel(mensagem, text="Cadastro realizado!", font=('Arial', 20, "bold"))
+    label_mensagem = ctk.CTkLabel(mensagem, text="Sucesso!", font=('Arial', 20, "bold"))
     label_mensagem.place(relx=0.5, y=150, anchor="center")
     
     mensagem.after(3000, mensagem.destroy)
@@ -338,10 +340,6 @@ def verifica_porta_lacrada():
     func = aciona_porta_lacrada()
     func()
 
-# =============================== Cria usuario ===================================
-
-
-
 # =============================== Movimentação porta lacrada ===================================
 
 # ================================ Tela Login ===================================
@@ -409,6 +407,10 @@ def tela_supervisor():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
     
     # ====== Botões ======
+    
+    # Botão para sair no canto inferior esquerdo
+    
+
     btn_ranking = ctk.CTkButton(
         app,
         text="Ranking",
@@ -421,7 +423,7 @@ def tela_supervisor():
         text_color="white",
         command=tela_ranking
     )
-    btn_ranking.place(relx=0.5, y=420, anchor="center")
+    btn_ranking.place(relx=0.5, y=400, anchor="center")
     
     btn_adicionar_maquinista = ctk.CTkButton(
         app,
@@ -435,7 +437,7 @@ def tela_supervisor():
         text_color="white",
         command=tela_adicionar_maquinista
     )
-    btn_adicionar_maquinista.place(relx=0.5, y=508, anchor="center")
+    btn_adicionar_maquinista.place(relx=0.5, y=484, anchor="center")
 
     btn_remover_maquinista = ctk.CTkButton(
         app,
@@ -449,8 +451,22 @@ def tela_supervisor():
         text_color="white",
         command=tela_remover_maquinista
     )
-    btn_remover_maquinista.place(relx=0.5, y=596, anchor="center")
+    btn_remover_maquinista.place(relx=0.5, y=576, anchor="center")
 
+    btn_sair = ctk.CTkButton(
+        app,
+        text="Sair",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=main
+    )
+    btn_sair.place(relx=0.5, y=664, anchor="center")
+    
 def tela_ranking():
     for winget in app.winfo_children():
         winget.destroy()
@@ -463,19 +479,39 @@ def tela_ranking():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
     
     # ====== Tabela de Ranking ======
-    tabela_ranking = ctk.CTkFrame(app)
+    # Frame da tabela de ranking (aumentado)
+    tabela_ranking = ctk.CTkFrame(app, width=800, height=400, corner_radius=15, fg_color="#f5f6fa")
     tabela_ranking.place(relx=0.5, y=350, anchor="center")
 
-    # Adicionar cabeçalho
-    cabecalho = ctk.CTkLabel(tabela_ranking, text="Ranking", font=("Arial", 24, "bold"))
-    cabecalho.pack(pady=10)
+    # Cabeçalho estilizado
+    cabecalho = ctk.CTkLabel(
+        tabela_ranking,
+        text="Ranking",
+        font=("Arial", 30, "bold"),
+        text_color="#001489"
+    )
+    cabecalho.pack(pady=(30, 15))
 
-    # Adicionar dados fictícios
-    for i in range(5):
-        usuario = f"Usuário {i+1}"
-        pontuacao = f"{(5-i)*10} pontos"
-        linha = ctk.CTkLabel(tabela_ranking, text=f"{usuario}: {pontuacao}", font=("Arial", 18))
-        linha.pack(anchor="w")
+    # Cabeçalho das colunas
+    header_frame = ctk.CTkFrame(tabela_ranking, fg_color="transparent")
+    header_frame.pack(fill="x", padx=50)
+    ctk.CTkLabel(header_frame, text="Posição", font=("Arial", 20, "bold"), width=100, anchor="w").grid(row=0, column=0)
+    ctk.CTkLabel(header_frame, text="Usuário", font=("Arial", 20, "bold"), width=350, anchor="w").grid(row=0, column=1)
+    ctk.CTkLabel(header_frame, text="Pontuação", font=("Arial", 20, "bold"), width=150, anchor="w").grid(row=0, column=2)
+
+    # Dados fictícios para exemplo
+    rDAO = RankingDAO()
+    dados = rDAO.get_ranking()  # Espera-se que retorne uma lista de dicionários com "usuario" e "pontuacao"
+
+    # Linhas da tabela
+    for i, dado in enumerate(dados):
+        cor_fundo = "#eaf0fb" if i % 2 == 0 else "#f5f6fa"
+        linha = ctk.CTkFrame(tabela_ranking, fg_color=cor_fundo)
+        linha.pack(fill="x", padx=50, pady=3)
+        posicao = f"{i+1}º"
+        ctk.CTkLabel(linha, text=posicao, font=("Arial", 18), width=100, anchor="w").grid(row=0, column=0)
+        ctk.CTkLabel(linha, text=dado["Email"], font=("Arial", 18), width=350, anchor="w").grid(row=0, column=1)
+        ctk.CTkLabel(linha, text=f'{dado["Pontos"]} pontos', font=("Arial", 18), width=150, anchor="w").grid(row=0, column=2)
 
     # ====== Botões ======
     botao_sair = ctk.CTkButton(
@@ -492,6 +528,68 @@ def tela_ranking():
     )
     botao_sair.place(relx=0.5, y=596, anchor="center")
 
+def tela_ranking_maquinista():
+    for winget in app.winfo_children():
+        winget.destroy()
+    
+    # ============ Fundo =============
+    img_fundo = Image.open("./imgs/fundo.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    # ====== Tabela de Ranking ======
+    # Frame da tabela de ranking (aumentado)
+    tabela_ranking = ctk.CTkFrame(app, width=800, height=400, corner_radius=15, fg_color="#f5f6fa")
+    tabela_ranking.place(relx=0.5, y=350, anchor="center")
+
+    # Cabeçalho estilizado
+    cabecalho = ctk.CTkLabel(
+        tabela_ranking,
+        text="Ranking",
+        font=("Arial", 30, "bold"),
+        text_color="#001489"
+    )
+    cabecalho.pack(pady=(30, 15))
+
+    # Cabeçalho das colunas
+    header_frame = ctk.CTkFrame(tabela_ranking, fg_color="transparent")
+    header_frame.pack(fill="x", padx=50)
+    ctk.CTkLabel(header_frame, text="Posição", font=("Arial", 20, "bold"), width=100, anchor="w").grid(row=0, column=0)
+    ctk.CTkLabel(header_frame, text="Usuário", font=("Arial", 20, "bold"), width=350, anchor="w").grid(row=0, column=1)
+    ctk.CTkLabel(header_frame, text="Pontuação", font=("Arial", 20, "bold"), width=150, anchor="w").grid(row=0, column=2)
+
+    # Dados fictícios para exemplo
+    rDAO = RankingDAO()
+    dados = rDAO.get_ranking()  # Espera-se que retorne uma lista de dicionários com "usuario" e "pontuacao"
+
+    # Linhas da tabela
+    for i, dado in enumerate(dados):
+        cor_fundo = "#eaf0fb" if i % 2 == 0 else "#f5f6fa"
+        linha = ctk.CTkFrame(tabela_ranking, fg_color=cor_fundo)
+        linha.pack(fill="x", padx=50, pady=3)
+        posicao = f"{i+1}º"
+        ctk.CTkLabel(linha, text=posicao, font=("Arial", 18), width=100, anchor="w").grid(row=0, column=0)
+        ctk.CTkLabel(linha, text=dado["Email"], font=("Arial", 18), width=350, anchor="w").grid(row=0, column=1)
+        ctk.CTkLabel(linha, text=f'{dado["Pontos"]} pontos', font=("Arial", 18), width=150, anchor="w").grid(row=0, column=2)
+
+    # ====== Botões ======
+    botao_sair = ctk.CTkButton(
+        app,
+        text="Sair",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=abrir_menu
+    )
+    botao_sair.place(relx=0.5, y=596, anchor="center")
+
+# ================================ Tela Adicionar Maquinista ===================================
 def tela_adicionar_maquinista():
     for winget in app.winfo_children():
         winget.destroy()
@@ -568,7 +666,50 @@ def tela_remover_maquinista():
     
     bg_label = ctk.CTkLabel(app, image=bg_image, text="")
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    # Campo email
+    entry_email = ctk.CTkEntry(app, width=349, height=53, placeholder_text="Email", corner_radius=10, border_color="#001489",font=("Arial", 14))
+    entry_email.place(relx=0.5, y=168, anchor="center")
+    
+    def deletar():
+        usuario = UserModel(entry_email.get(), "")
+        uDAO = DeleteUserDAO()
+        resultado = uDAO.delete_user(usuario)
 
+        if resultado:
+            mensagem_sucesso_cadastro()
+        else:
+            mensagem_erro_cadastro()
+    
+    # ============= Botoes =============
+    btn_remover_maquinista = ctk.CTkButton(
+        app,
+        text="Remover Maquinista",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=deletar
+    )
+    btn_remover_maquinista.place(relx=0.5, y=450, anchor="center")
+    
+    btn_sair = ctk.CTkButton(
+        app,
+        text="Sair",
+        width=349,
+        height=53,
+        font=("Arial", 20),
+        corner_radius=10,
+        fg_color="#001489",
+        hover_color="#001a73",
+        text_color="white",
+        command=tela_supervisor
+    )
+    btn_sair.place(relx=0.5, y=550, anchor="center")
+    
 # ============================= Tela Menu =============================
 def abrir_menu():
     for winget in app.winfo_children():
@@ -596,7 +737,7 @@ def abrir_menu():
     )
     btn_iniciar.place(relx=0.5, y=420, anchor="center")
 
-    btn_historico = ctk.CTkButton(
+    btn_ranking = ctk.CTkButton(
         app,
         text="Ranking",
         width=349,
@@ -606,10 +747,10 @@ def abrir_menu():
         fg_color="#001489",
         hover_color="#001a73",
         text_color="white",
-        command=lambda: print("Histórico clicado")
+        command=tela_ranking_maquinista
     )
-    btn_historico.place(relx=0.5, y=508, anchor="center")
-    
+    btn_ranking.place(relx=0.5, y=508, anchor="center")
+
     btn_sair = ctk.CTkButton(
         app,
         text="Sair",
