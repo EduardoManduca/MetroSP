@@ -253,6 +253,7 @@ def mensagem_sucesso_cadastro():
     mensagem.mainloop()
 
 # ================================ Verifica Porta ===================================
+porta = Porta()
 def aciona_boteira_porta():
     if porta.esta_aberta():
         return boteira_porta_aberta
@@ -332,15 +333,28 @@ def verifica_porta_falha():
 obj_porta_lacrada = PortaLacrada()
 def aciona_porta_lacrada():
     if obj_porta_lacrada.get_estado():
-        return porta_lacrada
+        return lado_fora_porta_lacrada
     else:
-        return porta_falha_fechada
+        return lado_fora
 
 def verifica_porta_lacrada():
     func = aciona_porta_lacrada()
     func()
 
-# =============================== Movimentação porta lacrada ===================================
+# =============================== Verifica luz Porta Lacrada ===================================
+
+luz_porta_lacrada = PortaLacrada()
+def aciona_luz_porta_lacrada():
+    if luz_porta_lacrada.get_estado():
+        return boteira_porta_fechada
+    else:
+        return boteira_porta_aberta
+    
+def verifica_luz_porta_lacrada():
+    func = aciona_luz_porta_lacrada()
+    func()
+
+# ===============================  porta lacrada ===================================
 
 # ================================ Tela Login ===================================
 # Fundo com imagem
@@ -809,8 +823,6 @@ def abriTreinamento():
 
 # ============================ Tela Simulador =============================
 
-porta = Porta()
-porta.set_porta(False)
 
 def falhaPorta():
 
@@ -826,6 +838,7 @@ def falhaPorta():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # ============ Botões =============
+    
     imagem_seta_direita = ctk.CTkImage(
         light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
         size=(30, 30)
@@ -884,7 +897,27 @@ def falhaPorta():
         command=verifica_ddu
     )
     botao_ddu.place(x=150, y=270)
-
+    
+    def botao_ddu_porta_lacrada():
+        botao_adu.destroy()
+        
+        novo_botao_ddu = ctk.CTkButton(
+            app,
+            text="DDU",
+            width=60,
+            height=30,
+            fg_color="white",
+            text_color="black",
+            font=("Arial", 20),
+            hover=False,
+            command=ddu_porta_lacrada
+        )
+        novo_botao_ddu.place(x=150, y=270)
+        return novo_botao_ddu
+    
+    if obj_porta_lacrada.get_estado():
+        botao_ddu_porta_lacrada()
+    
     botao_vdu = ctk.CTkButton(
         app,
         text="VDU",
@@ -924,6 +957,23 @@ def falhaPorta():
     )
     botao_modulo_comunicacao.place(x=300, y=220)
     
+    def botao_finalizar():
+        botao_finalizar = ctk.CTkButton(
+            app,
+            text="Finalizar",
+            width=60,
+            height=30,
+            fg_color="white",
+            text_color="black",
+            font=("Arial", 20),
+            hover=False,
+            command=fim_simulacao
+        )
+        botao_finalizar.place(relx=0.98, rely=0.02, anchor="ne")
+        
+    if obj_porta_lacrada.get_estado():
+        botao_finalizar()
+
 def ADU():
     for winget in app.winfo_children():
         winget.destroy()
@@ -985,6 +1035,32 @@ def ddu_portas_fechadas():
         widget.destroy()
 
     img_fundo = Image.open("./imgs/Simulacao/DDU_porta_fechada.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+    
+def ddu_porta_lacrada():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/DDU_porta_lacrada.jpg").resize((1300, 700))
     bg_image = ImageTk.PhotoImage(img_fundo)
 
     bg_label = ctk.CTkLabel(app, image=bg_image, text="")
@@ -1409,7 +1485,7 @@ def porta_saida():
         image=imagem_seta_cima,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=lado_fora
+        command=verifica_porta_lacrada
     )
     seta_cima.place(relx=0.5, rely=0.05, anchor="n")
 
@@ -1738,7 +1814,51 @@ def lado_fora():
     )
     seta_direita.place(relx=0.95, rely=0.5, anchor="e")
 
-def porta_falha(): 
+def lado_fora_porta_lacrada():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/lado_fora_porta_lacrada.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    imagem_seta_cima = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_cima.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_saida
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+
+    seta_cima = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_cima,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=porta_lacrada
+    )
+    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+
+def porta_falha():
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -1873,7 +1993,7 @@ def porta_falha_fechada():
     botao_colocar_lacre.place(relx=0.5, rely=0.5, anchor="center")
  
 def porta_lacrada():
-    
+    obj_porta_lacrada.set_estado(True)
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -1897,7 +2017,7 @@ def porta_lacrada():
         image=imagem_seta_baixo,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=lado_fora
+        command=lado_fora_porta_lacrada
     )
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
 
@@ -2114,6 +2234,50 @@ def painel_externo_aberto_porta_isolada():
     )
     botao_fechar_painel.place(relx=0.5, rely=0.95, anchor="s")
 
+# ============ Fim da simulação =============
+
+def fim_simulacao():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/fundo.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    # Label de fim da simulação
+    label_fim = ctk.CTkLabel(
+        app,
+        text="Simulação Concluída!",
+        font=("Arial", 30),
+        text_color="black",
+        fg_color="transparent"
+    )
+    label_fim.place(relx=0.5, rely=0.4, anchor="center")
+    
+    # Label Pontos
+    label_pontos = ctk.CTkLabel(
+        app,
+        text="100 Pontos",
+        font=("Arial", 30),
+        text_color="black",
+        fg_color="transparent"
+    )
+    label_pontos.place(relx=0.5, rely=0.5, anchor="center")
+
+    botao_sair = ctk.CTkButton(
+        app,
+        text="Sair",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=app.quit
+    )
+    botao_sair.place(relx=0.5, rely=0.95, anchor="s")
 
 main()
 app.mainloop()
