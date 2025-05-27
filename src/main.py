@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image, ImageTk
 from DataBase.SingUpDAO import SingUpDAO
+from Game.ChaveServico import ChaveServico
 from models.NewUserModel import NewUserModel
 from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
@@ -352,6 +353,19 @@ def aciona_luz_porta_lacrada():
     
 def verifica_luz_porta_lacrada():
     func = aciona_luz_porta_lacrada()
+    func()
+
+# =============================== Verifica chave de servico ===================================
+
+chave_servico = ChaveServico()
+def aciona_chave_servico():
+    if chave_servico.get_estado():
+        return painel_direita
+    else:
+        return painel_direita_sem_chave
+
+def verifica_chave_servico():
+    func = aciona_chave_servico()
     func()
 
 # ===============================  porta lacrada ===================================
@@ -856,7 +870,7 @@ def falhaPorta():
         image=imagem_seta_direita,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=painel_direita
+        command=verifica_chave_servico
     )
     seta_direita.place(x=1230, y=320)
 
@@ -1503,6 +1517,7 @@ def porta_saida():
 
 def painel_direita():
 
+    chave_servico.set_estado(True)
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -1563,6 +1578,83 @@ def painel_direita():
     )
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
 
+    botao_retirar_chave = ctk.CTkButton(
+        app,
+        text="Retirar Chave",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=painel_direita_sem_chave
+    )
+    botao_retirar_chave.place(x=600, y=350)
+
+def painel_direita_sem_chave():
+    
+    chave_servico.set_estado(False)
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/painel_direito_sem_chave.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+    
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_direita = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
+        size=(30, 30)
+    )
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30, 30)
+    )
+    imagem_seta_baixo = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_baixo.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_direita = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_direita,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=lambda: print("Seta Direita clicada")
+    )
+    seta_direita.place(x=1230, y=320)
+    
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=falhaPorta
+    )
+    seta_esquerda.place(x=10, y=320)
+    
+    seta_baixo = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_baixo,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=verifica_chave_cbtc
+    )
+    seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
+    
+    
+
 def chave_cbtc_am():
     chave_cbtc.set_estado("AM")
     
@@ -1589,7 +1681,7 @@ def chave_cbtc_am():
         image=imagem_seta_cima,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=painel_direita
+        command=verifica_chave_servico
     )
     seta_cima.place(relx=0.5, rely=0.05, anchor="n")
     
@@ -2275,7 +2367,7 @@ def fim_simulacao():
         text_color="black",
         font=("Arial", 20),
         hover=False,
-        command=app.quit
+        command=abrir_menu
     )
     botao_sair.place(relx=0.5, rely=0.95, anchor="s")
 
