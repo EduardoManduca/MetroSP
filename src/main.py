@@ -1,18 +1,19 @@
 import customtkinter as ctk
 from PIL import Image, ImageTk
 from DataBase.SingUpDAO import SingUpDAO
-from Game.ChaveServico import ChaveServico
 from models.NewUserModel import NewUserModel
 from models.UserModel import UserModel
 from DataBase.LoginDAO import LoginDAO
 from DataBase.DeleteUserDAO import DeleteUserDAO
 from DataBase.RankingDAO import RankingDAO
+from Game.ChaveServico import ChaveServico
 from Game.Porta import Porta
 from Game.ChaveReversora import ChaveReversora
 from Game.Chave_CBTC import Chave_CBTC
 from Game.PainelExterno import PainelExterno
 from Game.PortaFalha import PortaFalha
 from Game.PortaLacrada import PortaLacrada
+from Game.Equipamentos import Equipamentos
 from Game.Tela import Tela
 
 # Configuração inicial
@@ -368,7 +369,18 @@ def verifica_chave_servico():
     func = aciona_chave_servico()
     func()
 
-# ===============================  porta lacrada ===================================
+# ===============================  Verifica equipamentos ===================================
+
+obj_equipamentos = Equipamentos()
+def aciona_equipamentos():
+    if obj_equipamentos.get_estado():
+        return equipamentos
+    else:
+        return equipamentos_pegos
+
+def verifica_equipamentos():
+    func = aciona_equipamentos()
+    func()
 
 # ================================ Tela Login ===================================
 # Fundo com imagem
@@ -1550,7 +1562,7 @@ def painel_direita():
         image=imagem_seta_direita,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=lambda: print("Seta Direita clicada")
+        command=verifica_equipamentos
     )
     seta_direita.place(x=1230, y=320)
 
@@ -1625,7 +1637,7 @@ def painel_direita_sem_chave():
         image=imagem_seta_direita,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=lambda: print("Seta Direita clicada")
+        command=verifica_equipamentos
     )
     seta_direita.place(x=1230, y=320)
     
@@ -1653,7 +1665,89 @@ def painel_direita_sem_chave():
     )
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
     
+    botao_colocar_chave = ctk.CTkButton(
+        app,
+        text="Colocar Chave",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=painel_direita
+    )
+    botao_colocar_chave.place(x=600, y=350)
     
+def equipamentos():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/equipamentos.jpg").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=verifica_chave_servico
+    )
+    seta_esquerda.place(x=10, y=320)
+    
+    botao_pegar_equipamentos = ctk.CTkButton(
+        app,
+        text="Pegar Equipamentos",
+        width=60,
+        height=30,
+        fg_color="white",
+        text_color="black",
+        font=("Arial", 20),
+        hover=False,
+        command=equipamentos_pegos
+    )
+    botao_pegar_equipamentos.place(x=600, y=300)
+
+def equipamentos_pegos():
+    obj_equipamentos.set_estado(False)
+    
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/Simulacao/sem_equipamentos.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    imagem_seta_esquerda = ctk.CTkImage(
+        light_image=Image.open("./imgs/Simulacao/seta_esquerda.png"),
+        size=(30, 30)
+    )
+    
+    # ============ Botões =============
+    seta_esquerda = ctk.CTkButton(
+        app,
+        text="",
+        width=60,
+        height=60,
+        image=imagem_seta_esquerda,
+        fg_color="transparent",
+        hover_color="#e0e0e0",
+        command=verifica_chave_servico
+    )
+    seta_esquerda.place(x=10, y=320)
 
 def chave_cbtc_am():
     chave_cbtc.set_estado("AM")
