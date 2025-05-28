@@ -14,11 +14,19 @@ from Game.PainelExterno import PainelExterno
 from Game.PortaFalha import PortaFalha
 from Game.PortaLacrada import PortaLacrada
 from Game.Equipamentos import Equipamentos
+from Game.Pontos import Pontos
 from Game.Tela import Tela
+from Game.PAComunicado import PAComunicado
+from Game.CCOComunicado import CCOComunicado
 
 # Configuração inicial
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
+ponto = Pontos()
+cont1 = 0
+cont2 = 0
+cont3 = 0
+
 
 # ======================================= Tela Login ======================================= 
 LARGURA = 1300
@@ -134,7 +142,10 @@ def mensagem_porta_fechada():
     
     mensagem.mainloop()
 
+cco = CCOComunicado()
 def mensagem_cco():
+    cco.set_estado(True)
+    
     mensagem = ctk.CTk()
     mensagem.geometry("300x250")
     mensagem.title("Mensagem")
@@ -165,6 +176,8 @@ def mensagem_cco():
     mensagem.mainloop()
 
 def mensagem_isolamento_errado():
+    ponto.sub_pontos(3)
+    
     mensagem = ctk.CTk()
     mensagem.geometry("300x250")
     mensagem.title("Mensagem")
@@ -312,6 +325,7 @@ def aciona_painel_externo():
         return painel_externo_aberto
     else:
         return painel_externo_aberto_porta_isolada
+        ponto.add_pontos(1)
 
 def verifica_painel_externo():
     func = aciona_painel_externo()
@@ -381,6 +395,48 @@ def aciona_equipamentos():
 def verifica_equipamentos():
     func = aciona_equipamentos()
     func()
+
+# ================================ PA ===================================
+estadoPA = PAComunicado()
+
+# ================================ Pontuação ===================================
+
+
+
+def reversora_cbtc():
+    if chave.estado == "Frente" and chave_cbtc.estado == "RM":
+        ponto.add_pontos(1)
+    if chave.estado == "Frente" and chave_cbtc.estado == "AM":
+        ponto.sub_pontos(2)
+    if chave.estado == "Ré":
+        ponto.sub_pontos(3)
+
+def voltar_reversora():
+    if chave.estado == "Neutro" and chave_cbtc.estado == "RM":
+        ponto.add_pontos(1)
+    else:
+        ponto.sub_pontos(1)
+
+def ponto_pa():
+    if estadoPA.get_estado():
+        ponto.add_pontos(1)
+        
+def ponto_porta():
+    if not porta.esta_aberta():
+        ponto.add_pontos(2)
+
+def ponto_cco():
+    if cco.get_estado():
+        ponto.add_pontos(1)
+    if estadoPA.get_estado():
+        ponto.add_pontos(1)
+
+def ponto_equipamento():
+    if obj_equipamentos.get_estado():
+        ponto.add_pontos(2)
+    if chave_servico.get_estado():
+        ponto.add_pontos(2)
+    ponto.add_pontos(1)
 
 # ================================ Tela Login ===================================
 # Fundo com imagem
@@ -1325,12 +1381,13 @@ def modulo_comunicacao():
     botao_CCO.place(x=150, y=350)
     
 def PA():
+    estadoPA.set_estado(True)
     for widget in app.winfo_children():
         widget.destroy()
     
     img_fundo = Image.open("./imgs/Simulacao/PA.jpg").resize((1300, 700))
     bg_image = ImageTk.PhotoImage(img_fundo)
-
+    
     bg_label = ctk.CTkLabel(app, image=bg_image, text="")
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
     
@@ -1373,7 +1430,7 @@ def boteira_porta_fechada():
         hover=False,
         command=mensagem_porta_fechada
     )
-    botao_fechar_porta.place(x=600, y=430)
+    botao_fechar_porta.place(x=600, y=450)
 
     imagem_seta_direita = ctk.CTkImage(
         light_image=Image.open("./imgs/Simulacao/seta_direita.png"),
@@ -1481,7 +1538,7 @@ def boteira_porta_aberta():
         hover=False,
         command=mensagem_porta_aberta
     )
-    botao_abrir_porta.place(x=560, y=300)
+    botao_abrir_porta.place(x=600, y=340)
 
 def porta_saida(): 
     for widget in app.winfo_children():
@@ -1503,17 +1560,30 @@ def porta_saida():
     )
     
     # ============ Botões =============
-    seta_cima = ctk.CTkButton(
-        app,
-        text="",
-        width=60,
-        height=60,
-        image=imagem_seta_cima,
-        fg_color="transparent",
-        hover_color="#e0e0e0",
-        command=verifica_porta_lacrada
-    )
-    seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+    if chave_servico.get_estado() == False:
+        seta_cima = ctk.CTkButton(
+            app,
+            text="",
+            width=60,
+            height=60,
+            image=imagem_seta_cima,
+            fg_color="transparent",
+            hover_color="#e0e0e0",
+            command=verifica_porta_lacrada
+        )
+        seta_cima.place(relx=0.5, rely=0.05, anchor="n")
+    else:
+        seta_cima = ctk.CTkButton(
+            app,
+            text="",
+            width=60,
+            height=60,
+            image=imagem_seta_cima,
+            fg_color="transparent",
+            hover_color="#e0e0e0",
+            command=fim_simulacao_erro_chave
+        )
+        seta_cima.place(relx=0.5, rely=0.05, anchor="n")
 
     seta_esquerda = ctk.CTkButton(
         app,
@@ -1528,7 +1598,10 @@ def porta_saida():
     seta_esquerda.place(x=10, y=320)
 
 def painel_direita():
-
+    global cont1
+    cont1 += 1
+    if cont1 == 2:
+        ponto.add_pontos(1)
     chave_servico.set_estado(True)
     for widget in app.winfo_children():
         widget.destroy()
@@ -1844,7 +1917,7 @@ def chave_cbtc_mcs():
         image=imagem_seta_cima,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=painel_direita
+        command=verifica_chave_servico
     )
     seta_cima.place(relx=0.5, rely=0.05, anchor="n")
 
@@ -1913,7 +1986,7 @@ def chave_cbtc_rm():
         image=imagem_seta_cima,
         fg_color="transparent",
         hover_color="#e0e0e0",
-        command=painel_direita
+        command=verifica_chave_servico
     )
     seta_cima.place(relx=0.5, rely=0.05, anchor="n")
 
@@ -2120,6 +2193,7 @@ def porta_falha():
         botao_fechar_porta.place(relx=0.5, rely=0.5, anchor="center")
 
 def porta_falha_fechada():
+    ponto.add_pontos(4)
     obj_porta_falha.set_estado(False)
     
     for widget in app.winfo_children():
@@ -2179,6 +2253,8 @@ def porta_falha_fechada():
     botao_colocar_lacre.place(relx=0.5, rely=0.5, anchor="center")
  
 def porta_lacrada():
+    ponto.add_pontos(2)
+    
     obj_porta_lacrada.set_estado(True)
     for widget in app.winfo_children():
         widget.destroy()
@@ -2208,6 +2284,8 @@ def porta_lacrada():
     seta_baixo.place(relx=0.5, rely=0.95, anchor="s")
 
 def vao():
+    ponto.add_pontos(1)
+    
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -2252,6 +2330,8 @@ def vao():
     seta_esquerda.place(relx=0.05, rely=0.5, anchor="w")
 
 def lado_dentro_falha():
+    ponto.add_pontos(1)
+    
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -2281,6 +2361,10 @@ def lado_dentro_falha():
     
 
 def painel_externo():
+    global cont2
+    cont2 += 1
+    if cont2 == 2:
+        ponto.add_pontos(1)
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -2394,6 +2478,8 @@ def painel_externo_aberto():
     isoalar_porta4.place(x=1000, y=250)
     
 def painel_externo_aberto_porta_isolada():
+    ponto.add_pontos(3)
+    
     obj_painel.set_estado(True)
     
     for widget in app.winfo_children():
@@ -2423,6 +2509,24 @@ def painel_externo_aberto_porta_isolada():
 # ============ Fim da simulação =============
 
 def fim_simulacao():
+    
+    reversora_cbtc()
+    voltar_reversora()
+    ponto_pa()
+    ponto_porta()
+    ponto_cco()
+    ponto_equipamento()
+    
+    cco.set_estado(False)
+    estadoPA.set_estado(False)
+    chave.set_estado("Neutro")
+    chave_cbtc.set_estado("AM")
+    obj_equipamentos.set_estado(True)
+    chave_servico.set_estado(True)
+    porta.set_porta(True)
+    obj_porta_falha.set_estado(True)
+    obj_porta_lacrada.set_estado(False)
+
     for widget in app.winfo_children():
         widget.destroy()
 
@@ -2433,22 +2537,91 @@ def fim_simulacao():
     bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # Label de fim da simulação
+    # Label de fim da simulação estilizado
     label_fim = ctk.CTkLabel(
         app,
         text="Simulação Concluída!",
-        font=("Arial", 30),
-        text_color="black",
-        fg_color="transparent"
+        font=("Arial", 36, "bold"),
+        text_color="#001489",
+        fg_color="#eaf0fb",
+        corner_radius=20,
+        width=500,
+        height=60
     )
-    label_fim.place(relx=0.5, rely=0.4, anchor="center")
-    
-    # Label Pontos
+    label_fim.place(relx=0.5, rely=0.38, anchor="center")
+
+    # Label Pontos estilizado
     label_pontos = ctk.CTkLabel(
         app,
-        text="100 Pontos",
-        font=("Arial", 30),
+        text=f"{ponto.get_pontos()} Pontos",
+        font=("Arial", 32, "bold"),
+        text_color="#228B22",
+        fg_color="#f5f6fa",
+        corner_radius=20,
+        width=350,
+        height=50
+    )
+    label_pontos.place(relx=0.5, rely=0.5, anchor="center")
+
+    botao_sair = ctk.CTkButton(
+        app,
+        text="Sair",
+        width=60,
+        height=30,
+        fg_color="white",
         text_color="black",
-        fg_color="transparent"
+        font=("Arial", 20),
+        hover=False,
+        command=abrir_menu
+    )
+    botao_sair.place(relx=0.5, rely=0.95, anchor="s")
+    
+    ponto.set_pontos(0)
+
+def fim_simulacao_erro_chave():
+    for widget in app.winfo_children():
+        widget.destroy()
+
+    img_fundo = Image.open("./imgs/fundo.png").resize((1300, 700))
+    bg_image = ImageTk.PhotoImage(img_fundo)
+
+    bg_label = ctk.CTkLabel(app, image=bg_image, text="")
+    bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+    cco.set_estado(False)
+    estadoPA.set_estado(False)
+    chave.set_estado("Neutro")
+    chave_cbtc.set_estado("AM")
+    obj_equipamentos.set_estado(True)
+    chave_servico.set_estado(True)
+    porta.set_porta(True)
+    obj_porta_falha.set_estado(True)
+    obj_porta_lacrada.set_estado(False)
+    ponto.set_pontos(0) 
+    
+    # Label de fim da simulação
+    label_fim = ctk.CTkLabel(
+        app,
+        text="Simulação Finalizada!",
+        font=("Arial", 36, "bold"),
+        text_color="#001489",
+        fg_color="#eaf0fb",
+        corner_radius=20,
+        width=500,
+        height=60
+    )
+    label_fim.place(relx=0.5, rely=0.38, anchor="center")
+
+    # Label Pontos estilizado
+    label_pontos = ctk.CTkLabel(
+        app,
+        text=f"Erro: Você saiu sem a chave de serviço!",
+        font=("Arial", 32, "bold"),
+        text_color="#FF0000",
+        fg_color="#f5f6fa",
+        corner_radius=20,
+        width=600,
+        height=50
     )
     label_pontos.place(relx=0.5, rely=0.5, anchor="center")
 
