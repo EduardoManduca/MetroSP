@@ -1,5 +1,6 @@
 from DataBase.ConnectionFactory import ConnectionFactory
 from models.UserModel import UserModel
+from models.Pontuacao import Pontuacao
 
 class RankingDAO:
     def __init__(self):
@@ -14,3 +15,10 @@ class RankingDAO:
         result = [dict(zip(columns, row)) for row in rows]
         
         return result
+    
+    def set_pontuacao(self, pontuacao: Pontuacao):
+        cursor = self.connection.cursor()
+        cursor.execute("UPDATE pontos SET Pontos = %s WHERE Email = %s", (pontuacao.get_pontos(), pontuacao.get_email()))
+        
+        self.connection.commit()
+        cursor.close()

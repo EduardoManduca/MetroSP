@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from DataBase.SingUpDAO import SingUpDAO
 from models.NewUserModel import NewUserModel
 from models.UserModel import UserModel
+from models.Pontuacao import Pontuacao
 from DataBase.LoginDAO import LoginDAO
 from DataBase.DeleteUserDAO import DeleteUserDAO
 from DataBase.RankingDAO import RankingDAO
@@ -23,6 +24,8 @@ from Game.CCOComunicado import CCOComunicado
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("blue")
 ponto = Pontos()
+rDAO = RankingDAO()
+email_usuario = Pontuacao("email", 0)  # Inicializa com um email fictício e 0 pontos
 cont1 = 0
 cont2 = 0
 cont3 = 0
@@ -481,7 +484,10 @@ def main():
             if tipo_usuario == "supervisor":
                 tela_supervisor()
             elif tipo_usuario == "maquinista":
+                global email_usuario
+                email_usuario.setEmail(usuario.getEmail())
                 abrir_menu()
+
             else:
                 mensagem()
         else:
@@ -596,7 +602,7 @@ def tela_ranking():
     ctk.CTkLabel(header_frame, text="Pontuação", font=("Arial", 20, "bold"), width=150, anchor="w").grid(row=0, column=2)
 
     # Dados fictícios para exemplo
-    rDAO = RankingDAO()
+    
     dados = rDAO.get_ranking()  # Espera-se que retorne uma lista de dicionários com "usuario" e "pontuacao"
 
     # Linhas da tabela
@@ -657,7 +663,7 @@ def tela_ranking_maquinista():
     ctk.CTkLabel(header_frame, text="Pontuação", font=("Arial", 20, "bold"), width=150, anchor="w").grid(row=0, column=2)
 
     # Dados fictícios para exemplo
-    rDAO = RankingDAO()
+    global rDAO
     dados = rDAO.get_ranking()  # Espera-se que retorne uma lista de dicionários com "usuario" e "pontuacao"
 
     # Linhas da tabela
@@ -2598,7 +2604,9 @@ def fim_simulacao_erro_chave():
     obj_porta_falha.set_estado(True)
     obj_porta_lacrada.set_estado(False)
     ponto.set_pontos(0) 
-    
+
+    global rDAO
+    rDAO.set_pontuacao()
     # Label de fim da simulação
     label_fim = ctk.CTkLabel(
         app,
