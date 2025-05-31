@@ -19,6 +19,13 @@ class RankingDAO:
     def set_pontuacao(self, pontuacao: Pontuacao):
         cursor = self.connection.cursor()
         cursor.execute("UPDATE pontos SET Pontos = %s WHERE Email = %s", (pontuacao.get_pontos(), pontuacao.get_email()))
+
+        self.connection.commit()
+        cursor.close()
         
+    def criar_pontuador(self, pontuacao: Pontuacao):
+        cursor = self.connection.cursor()
+        cursor.execute("INSERT INTO pontos (Email, Pontos) VALUES (%s, %s)", (pontuacao.get_email(), pontuacao.get_pontos()))
+
         self.connection.commit()
         cursor.close()

@@ -16,7 +16,6 @@ from Game.PortaFalha import PortaFalha
 from Game.PortaLacrada import PortaLacrada
 from Game.Equipamentos import Equipamentos
 from Game.Pontos import Pontos
-from Game.Tela import Tela
 from Game.PAComunicado import PAComunicado
 from Game.CCOComunicado import CCOComunicado
 
@@ -327,8 +326,8 @@ def aciona_painel_externo():
     if not obj_painel.get_estado():
         return painel_externo_aberto
     else:
-        return painel_externo_aberto_porta_isolada
         ponto.add_pontos(1)
+        return painel_externo_aberto_porta_isolada
 
 def verifica_painel_externo():
     func = aciona_painel_externo()
@@ -473,25 +472,26 @@ def main():
 
     # Botão Entrar 
     def login():
+        global email_usuario
         print(f"ID: {entry_id.get()}, Senha: {entry_senha.get()}")
         usuario = UserModel(entry_id.get(), entry_senha.get())
         uDAO = LoginDAO()
         resultado = uDAO.login(usuario)
         
-        if resultado:
-            print(True)
-            tipo_usuario = uDAO.verifica_tipo_usuario(usuario.getEmail())
+        try:
+            if resultado:
+                print(True)
+                tipo_usuario = uDAO.verifica_tipo_usuario(usuario.getEmail())
             if tipo_usuario == "supervisor":
+                email_usuario.set_email(usuario.getEmail())
                 tela_supervisor()
             elif tipo_usuario == "maquinista":
-                global email_usuario
-                email_usuario.setEmail(usuario.getEmail())
+                email_usuario.set_email(usuario.getEmail())
                 abrir_menu()
-
             else:
                 mensagem()
-        else:
-            print(False)
+        except Exception as e:
+            print(f"Erro ao tentar logar: {e}")
             mensagem()
 
     btn_login = ctk.CTkButton(app, text="Entrar", width=349, height=53, corner_radius=10, fg_color="#001489",font=("Arial", 14), command=login)
@@ -606,7 +606,8 @@ def tela_ranking():
     dados = rDAO.get_ranking()  # Espera-se que retorne uma lista de dicionários com "usuario" e "pontuacao"
 
     # Linhas da tabela
-    for i, dado in enumerate(dados):
+    top5 = sorted(dados, key=lambda x: x["Pontos"], reverse=True)[:5]
+    for i, dado in enumerate(top5):
         cor_fundo = "#eaf0fb" if i % 2 == 0 else "#f5f6fa"
         linha = ctk.CTkFrame(tabela_ranking, fg_color=cor_fundo)
         linha.pack(fill="x", padx=50, pady=3)
@@ -667,7 +668,9 @@ def tela_ranking_maquinista():
     dados = rDAO.get_ranking()  # Espera-se que retorne uma lista de dicionários com "usuario" e "pontuacao"
 
     # Linhas da tabela
-    for i, dado in enumerate(dados):
+    # Ordena os dados pela pontuação (maior para menor) e pega os 5 primeiros
+    top5 = sorted(dados, key=lambda x: x["Pontos"], reverse=True)[:5]
+    for i, dado in enumerate(top5):
         cor_fundo = "#eaf0fb" if i % 2 == 0 else "#f5f6fa"
         linha = ctk.CTkFrame(tabela_ranking, fg_color=cor_fundo)
         linha.pack(fill="x", padx=50, pady=3)
@@ -723,6 +726,8 @@ def tela_adicionar_maquinista():
         resultado = uDAO.create_user(user)
 
         if resultado:
+            pontos = Pontuacao(entry_email.get(), 0)
+            rDAO.criar_pontuador(pontos)
             mensagem_sucesso_cadastro()
         else:
             mensagem_erro_cadastro()
@@ -2532,6 +2537,12 @@ def fim_simulacao():
     porta.set_porta(True)
     obj_porta_falha.set_estado(True)
     obj_porta_lacrada.set_estado(False)
+    obj_painel.set_estado(False)
+
+    global rDAO
+    global email_usuario
+    email_usuario.set_pontos(ponto.get_pontos())
+    rDAO.set_pontuacao(email_usuario)
 
     for widget in app.winfo_children():
         widget.destroy()
@@ -2583,6 +2594,7 @@ def fim_simulacao():
     botao_sair.place(relx=0.5, rely=0.95, anchor="s")
     
     ponto.set_pontos(0)
+    
 
 def fim_simulacao_erro_chave():
     for widget in app.winfo_children():
@@ -2603,10 +2615,9 @@ def fim_simulacao_erro_chave():
     porta.set_porta(True)
     obj_porta_falha.set_estado(True)
     obj_porta_lacrada.set_estado(False)
+    obj_painel.set_estado(False)
     ponto.set_pontos(0) 
 
-    global rDAO
-    rDAO.set_pontuacao()
     # Label de fim da simulação
     label_fim = ctk.CTkLabel(
         app,
